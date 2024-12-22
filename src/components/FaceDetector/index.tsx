@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import Logo from "../Logo";
 import Rank from "./Rank";
 import ImageLinkForm from "./ImageLinkForm";

@@ -5,11 +5,16 @@ Nav {
   justify-content: flex-end;
   align-items: flex-end;
 
-  a {
+  a, button {
     padding: .5rem;
     cursor: pointer;
     text-decoration: underline;
     color: black;
     font-weight: 700;
+  }
+
+  button {
+    background: none;
+    border: 0;
   }
 }

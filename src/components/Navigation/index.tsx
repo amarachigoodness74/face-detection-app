@@ -1,14 +1,25 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { useUserContext } from '../../state/UserContext';
+import { Link, useNavigate } from "react-router-dom";
+import { useUserContext } from "../../state/UserContext";
 import styles from "./Navigation.module.css";
 
 const Navigation = () => {
-  const { userData } = useUserContext();
+  const navigate = useNavigate();
+  const { userData, updateUser } = useUserContext();
   if (userData.isSignedIn) {
     return (
       <nav className={styles.Nav}>
-        <Link to="/signout">Sign Out</Link>
+        <button
+          onClick={() => {
+            updateUser({
+              imageUrl: "",
+              isSignedIn: false,
+            });
+            navigate("/");
+          }}
+        >
+          Sign Out
+        </button>
       </nav>
     );
   } else {

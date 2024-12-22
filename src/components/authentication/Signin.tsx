@@ -18,8 +18,8 @@ const SigninSchema = Yup.object().shape({
 
 const Signin = () => {
   const navigate = useNavigate();
-  const { userData, updateUser } = useUserContext();
-  const [error, setError] = useState(null);
+  const { updateUser } = useUserContext();
+  const [error, setError] = useState<string | null>(null);
 
   const loadUser = (data: IUser) => {
     updateUser({
@@ -34,20 +34,31 @@ const Signin = () => {
     });
   };
 
-  const handleSignIn = (data: SignInTypes) => {
-    fetch(`${process.env.REACT_APP_API_URL}/signin`, {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((user) => {
-        if (user.id) {
-          loadUser(user);
-          navigate("/face-detector");
+  const handleSignIn = async (data: SignInTypes) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/auth/signin`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
         }
-      })
-      .catch((error) => setError(error));
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Signin failed");
+      }
+
+      const user = await response.json();
+
+      if (user) {
+        loadUser(user); // Load user data into state
+        navigate("/face-detector"); // Navigate to the next page
+      }
+    } catch (error: any) {
+      setError(error.message || "An unexpected error occurred");
+    }
   };
 
   return (
@@ -60,8 +71,7 @@ const Signin = () => {
         }}
         validationSchema={SigninSchema}
         onSubmit={async (values) => {
-          await new Promise((r) => setTimeout(r, 500));
-          alert(JSON.stringify(values, null, 2));
+          await handleSignIn(values);
         }}
       >
         {({ errors, touched }) => (

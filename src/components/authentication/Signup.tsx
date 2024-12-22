@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Formik, Field, Form } from "formik";
@@ -7,8 +8,7 @@ import { useUserContext } from "../../state/UserContext";
 import AuthStyles from "./Auth.module.css";
 
 type SignUpTypes = {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
   password: string;
 };
@@ -35,8 +35,8 @@ const SignupSchema = Yup.object().shape({
 
 const Signup = () => {
   const navigate = useNavigate();
-  const { userData, updateUser } = useUserContext();
-  const [error, setError] = useState("This is an error!!!");
+  const { updateUser } = useUserContext();
+  const [error, setError] = useState<string | null>(null);
 
   const loadUser = (data: IUser) => {
     updateUser({
@@ -51,20 +51,31 @@ const Signup = () => {
     });
   };
 
-  const handleSignup = (data: SignUpTypes) => {
-    fetch(`${process.env.REACT_APP_API_URL}/signup`, {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    })
-      .then((response) => response.json())
-      .then((user) => {
-        if (user.id) {
-          loadUser(user);
-          navigate("/face-detector");
+  const handleSignup = async (data: SignUpTypes) => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/auth/signup`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
         }
-      })
-      .catch(error => setError(error));
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Signup failed");
+      }
+
+      const user = await response.json();
+
+      if (user) {
+        loadUser(user); // Load user data into state
+        navigate("/face-detector"); // Navigate to the next page
+      }
+    } catch (error: any) {
+      setError(error.message || "An unexpected error occurred");
+    }
   };
 
   return (
@@ -79,8 +90,12 @@ const Signup = () => {
         }}
         validationSchema={SignupSchema}
         onSubmit={async (values) => {
-          await new Promise((r) => setTimeout(r, 500));
-          alert(JSON.stringify(values, null, 2));
+          const data = {
+            name: `${values.firstName} ${values.lastName}`,
+            email: values.email,
+            password: values.password,
+          };
+          await handleSignup(data);
         }}
       >
         {({ errors, touched }) => (

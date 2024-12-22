@@ -6,19 +6,32 @@ import Styles from "./FaceDetector.module.css";
 const ImageLinkForm = () => {
   const { userData, updateUser } = useUserContext();
   const [url, setUrl] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
-  const getModelData = () => {
-    fetch(`${process.env.REACT_APP_API}/signin`, {
-      method: "post",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(userData.imageUrl),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log("Data: ", data);
-      })
-      .catch((error) => setError(error));
+  const getModelData = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.REACT_APP_API_URL}/users/image`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: userData.user.email,
+            image: userData.imageUrl,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Process failed");
+      }
+
+      const data = await response.json();
+      console.log("======= res", data);
+    } catch (error: any) {
+      setError(error.message || "An unexpected error occurred");
+    }
   };
 
   const onButtonSubmit = () => {

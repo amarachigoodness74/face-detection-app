@@ -1,12 +1,15 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Navigation from "./components/Navigation";
+import { useUserContext } from "./state/UserContext";
 import Signup from "./components/authentication/Signup";
 import Signin from "./components/authentication/Signin";
 import FaceDetector from "./components/FaceDetector";
 import "./App.css";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
+  const { userData } = useUserContext();
   // const calculateFaceLocation = (data) => {
   //   const clarifaiFace =
   //     data.outputs[0].data.regions[0].region_info.bounding_box;
@@ -73,7 +76,14 @@ function App() {
       <Routes>
         <Route index path="/" element={<Signin />} />
         <Route path="signup" element={<Signup />} />
-        <Route path="/face-detector" element={<FaceDetector />} />
+        <Route
+          path="/face-detector"
+          element={
+            <ProtectedRoute>
+              <FaceDetector />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       {/* <Route path="*" element={<NoMatch />} /> */}
     </React.Fragment>
