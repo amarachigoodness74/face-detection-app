@@ -1,0 +1,34 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Courier New, Courier, monospace;
+  background: linear-gradient(89deg, #ff5edf 0%, #04c8de 100%);
+}
+
+.container {
+  height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: Arial, sans-serif;
+  overflow: hidden;
+}
+
+.heading {
+  font-size: 5rem;
+  color: #ff4a4a;
+  margin: 20px 0;
+}
+
+.message {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.link {
+  text-decoration: underline;
+  font-size: 1rem;
+  color: #157112;
+}
