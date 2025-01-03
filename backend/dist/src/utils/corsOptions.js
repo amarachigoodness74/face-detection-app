@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const allowedOrigins = [
-    "http://127.0.0.1:5000",
-    "http://localhost:5000",
-    "http://localhost:3000",
-    "https://face-detector-app.vercel.app",
+  "http://127.0.0.1:5000",
+  "http://localhost:5000",
+  "http://localhost:3000",
+  "https://face-detection-app-by-amara.vercel.app",
 ];
 const corsOptions = {
     origin: (origin, callback) => {
