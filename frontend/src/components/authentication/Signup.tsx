@@ -98,7 +98,7 @@ const Signup = () => {
           await handleSignup(data);
         }}
       >
-        {({ errors, touched }) => (
+        {({ errors, touched, isSubmitting }) => (
           <Form className={AuthStyles.Form}>
             <div className={AuthStyles.FormItem}>
               <label htmlFor="firstName">First Name</label>
@@ -137,7 +137,9 @@ const Signup = () => {
               ) : null}
             </div>
 
-            <button type="submit">Submit</button>
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </button>
 
             {error && <div className={AuthStyles.Error}>{error}</div>}
           </Form>

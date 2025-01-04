@@ -74,7 +74,7 @@ const Signin = () => {
           await handleSignIn(values);
         }}
       >
-        {({ errors, touched }) => (
+        {({ errors, touched, isSubmitting }) => (
           <Form className={AuthStyles.Form}>
             <div className={AuthStyles.FormItem}>
               <label htmlFor="email">Email</label>
@@ -92,7 +92,9 @@ const Signin = () => {
               ) : null}
             </div>
 
-            <button type="submit">Submit</button>
+            <button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Submitting..." : "Submit"}
+            </button>
 
             {error && <div className={AuthStyles.Error}>{error}</div>}
           </Form>
