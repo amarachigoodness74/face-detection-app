@@ -8,4 +8,5 @@ interface BoundingBox {
 export interface Props {
   imageUrl: string;
   regions: { region_info: { bounding_box: BoundingBox } }[];
+  setIsSubmitting: (val: boolean) => void;
 }

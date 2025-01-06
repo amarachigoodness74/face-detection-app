@@ -1,4 +1,4 @@
-![screencapture-face-detection-app-by-amara-vercel-app-public-face-detector-2025-01-06-11_42_35](https://github.com/user-attachments/assets/4f4cfbc0-f548-4067-a309-23260905cc4f)# Face Detection App and API
+# Face Detection App and API
 
 This is a project that accepts image link and marks face area on image using Clarifai's face-detection model. It offers essential features like user registration and login. Backend is built with the powerful Express.js and an intuitive React.js frontend.
 
@@ -7,8 +7,7 @@ This is a project that accepts image link and marks face area on image using Cla
 - **User Authentication**
   - Login and Signup functionality.
   - Unauthorized users can also test the application as Guest Users
-![screencapture-face-detection-app-by-amara-vercel-app-public-face-detector-2025-01-06-11_42_35](https://github.com/user-attachments/assets/ed23b3e5-abec-41d9-90d6-b24b46b926d1)
-    
+    ![screencapture-face-detection-app-by-amara-vercel-app-public-face-detector-2025-01-06-11_42_35](https://github.com/user-attachments/assets/ed23b3e5-abec-41d9-90d6-b24b46b926d1)
 - **Responsive Design**
   - Fully responsive UI built with CSS and TailwindCSS for an optimized user experience on all devices.
 - Single face and multiple faces detection functionality.

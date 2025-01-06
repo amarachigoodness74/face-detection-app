@@ -9,6 +9,7 @@ const ImageLinkForm = ({ isPublic = false }) => {
   const { userData, updateUser } = useUserContext();
   const [imageUrl, setImageUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [boxData, setBoxData] = useState<any | null>(null);
 
   const validateURL = () => {
@@ -21,6 +22,8 @@ const ImageLinkForm = ({ isPublic = false }) => {
   };
 
   const onButtonSubmit = async () => {
+    setIsSubmitting(true);
+    setBoxData(null);
     if (validateURL()) {
       updateUser({
         imageUrl,
@@ -31,11 +34,13 @@ const ImageLinkForm = ({ isPublic = false }) => {
         userData.imageUrl || imageUrl
       );
       if (data.error) {
+        setIsSubmitting(false);
         setError("Process failed");
       } else {
         setBoxData(data);
       }
     } else {
+      setIsSubmitting(false);
       setError("Please enter a valid image url");
     }
   };
@@ -51,10 +56,16 @@ const ImageLinkForm = ({ isPublic = false }) => {
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
         />
-        <button onClick={onButtonSubmit}>Detect</button>
+        <button onClick={onButtonSubmit} disabled={isSubmitting}>
+          {isSubmitting ? "Processing..." : "Detect"}
+        </button>
       </div>
       {boxData && (
-        <FaceDetection imageUrl={userData.imageUrl} regions={boxData} />
+        <FaceDetection
+          imageUrl={userData.imageUrl}
+          regions={boxData}
+          setIsSubmitting={setIsSubmitting}
+        />
       )}
     </React.Fragment>
   );

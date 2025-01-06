@@ -3,7 +3,11 @@ import { Props } from "../../types/regions";
 
 import Styles from "./FaceDetector.module.css";
 
-const FaceDetection: React.FC<Props> = ({ imageUrl, regions }) => {
+const FaceDetection: React.FC<Props> = ({
+  imageUrl,
+  regions,
+  setIsSubmitting,
+}) => {
   const imageRef = useRef<HTMLImageElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isImageLoaded, setIsImageLoaded] = useState(false);
@@ -54,7 +58,10 @@ const FaceDetection: React.FC<Props> = ({ imageUrl, regions }) => {
         ref={imageRef}
         src={imageUrl}
         alt="Detected faces"
-        onLoad={() => setIsImageLoaded(true)}
+        onLoad={() => {
+          setIsImageLoaded(true);
+          setIsSubmitting(false);
+        }}
         style={{ display: "block" }}
       />
       <canvas ref={canvasRef} className={Styles.BoundingBox} />
