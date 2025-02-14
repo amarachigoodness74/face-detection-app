@@ -63,7 +63,6 @@
   position: relative;
   display: block;
   width: 500px;
-  height: 500px;
   overflow: hidden;
 
   img {
@@ -81,7 +80,7 @@
 .Error {
   margin: 7px 0;
   color: #f10808;
-  font-size: .8rem;
+  font-size: 0.8rem;
   font-weight: 600;
   font-style: italic;
 }

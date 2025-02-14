@@ -8,23 +8,54 @@ import getModelData from "../../utils/getData";
 const ImageLinkForm = ({ isPublic = false }) => {
   const { userData, updateUser } = useUserContext();
   const [imageUrl, setImageUrl] = useState("");
+  const [resizedImage, setResizedImage] = useState<string | null>(null);
+  const [boxData, setBoxData] = useState<any | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [boxData, setBoxData] = useState<any | null>(null);
 
   const validateURL = () => {
     try {
-      new URL(imageUrl);
-      return true;
+      const imagePattern = /\.(jpeg|jpg|png)$/i;
+      return (
+        imagePattern.test(imageUrl) &&
+        !imageUrl.startsWith("data:") &&
+        !imageUrl.startsWith("blob:")
+      );
     } catch (err) {
       return false;
     }
   };
 
+  const resizeImage = (url: string, newWidth: number) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous"; // Prevents CORS issues
+    img.src = url;
+
+    img.onload = () => {
+      const aspectRatio = img.height / img.width; // Calculate aspect ratio
+      const newHeight = newWidth * aspectRatio; // Auto-calculate height
+
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+
+      canvas.width = newWidth;
+      canvas.height = newHeight;
+
+      if (ctx) ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+      // Convert to Base64 and update state
+      const resizedDataUrl = canvas.toDataURL("image/jpeg");
+      setResizedImage(resizedDataUrl);
+    };
+  };
+
   const onButtonSubmit = async () => {
     setIsSubmitting(true);
+    setError(null);
     setBoxData(null);
+    setResizedImage(null);
     if (validateURL()) {
+      resizeImage(imageUrl, 500);
       updateUser({
         imageUrl,
       });
@@ -41,7 +72,7 @@ const ImageLinkForm = ({ isPublic = false }) => {
       }
     } else {
       setIsSubmitting(false);
-      setError("Please enter a valid image url");
+      setError("Please enter a valid image url(.jpeg|jpg|png");
     }
   };
 
@@ -50,9 +81,9 @@ const ImageLinkForm = ({ isPublic = false }) => {
       {error && <div className={Styles.Error}>{error}</div>}
       <div className={Styles.ImageLinkForm}>
         <input
-          type="text"
           required
-          placeholder="URL"
+          type="text"
+          placeholder="Enter image URL"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
         />
@@ -60,9 +91,18 @@ const ImageLinkForm = ({ isPublic = false }) => {
           {isSubmitting ? "Processing..." : "Detect"}
         </button>
       </div>
-      {boxData && (
+      {resizedImage && !boxData && (
+        <div className={Styles.ImagePreview}>
+          <img
+            src={resizedImage}
+            alt="Detected faces"
+            style={{ display: "block" }}
+          />
+        </div>
+      )}
+      {resizedImage && boxData && (
         <FaceDetection
-          imageUrl={userData.imageUrl}
+          imageUrl={resizedImage}
           regions={boxData}
           setIsSubmitting={setIsSubmitting}
         />
