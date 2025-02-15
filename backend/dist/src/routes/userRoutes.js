@@ -71,11 +71,14 @@ router.post("/guest-image", (0, user_validations_1.guestImageValidation)(), user
 router.post("/image", (0, user_validations_1.imageValidation)(), user_validations_1.validate, (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, image } = req.body;
     try {
-        if (!email || !image) {
+        if (!email) {
+            res.status(400).json({ message: "Invalid user." });
+        }
+        if (!image) {
             res.status(400).json({ message: "Invalid route." });
         }
-        // Check if user exists
-        const user = yield user_model_1.default.findOne({ email });
+        // Check if user exists and update
+        const user = yield user_model_1.default.findOneAndUpdate({ email }, { $inc: { entries: 1 } }, { new: true });
         if (!user) {
             res.status(404).json({ message: "User not found." });
         }

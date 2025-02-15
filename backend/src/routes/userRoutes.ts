@@ -81,12 +81,20 @@ router.post(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, image } = req.body;
     try {
-      if (!email || !image) {
+      if (!email) {
+        res.status(400).json({ message: "Invalid user." });
+      }
+
+      if (!image) {
         res.status(400).json({ message: "Invalid route." });
       }
 
-      // Check if user exists
-      const user = await User.findOne({ email });
+      // Check if user exists and update
+      const user = await User.findOneAndUpdate(
+        { email },
+        { $inc: { entries: 1 } },
+        { new: true }
+      );
       if (!user) {
         res.status(404).json({ message: "User not found." });
       } else {
