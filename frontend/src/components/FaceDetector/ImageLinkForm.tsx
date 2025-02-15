@@ -56,19 +56,31 @@ const ImageLinkForm = ({ isPublic = false }) => {
     setResizedImage(null);
     if (validateURL()) {
       resizeImage(imageUrl, 500);
-      updateUser({
-        imageUrl,
-      });
       const data = await getModelData(
         isPublic,
         userData.user.email || "",
-        userData.imageUrl || imageUrl
+        imageUrl || ""
       );
       if (data.error) {
         setIsSubmitting(false);
         setError("Process failed");
       } else {
-        setBoxData(data);
+        if (!isPublic) {
+          const { _id, name, email, entries, createdAt } = data.user;
+          updateUser({
+            imageUrl,
+            user: {
+              id: _id,
+              name,
+              email,
+              entries,
+              joined: createdAt,
+            },
+          });
+          setBoxData(data.regions);
+        } else {
+          setBoxData(data);
+        }
       }
     } else {
       setIsSubmitting(false);

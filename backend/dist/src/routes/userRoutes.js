@@ -24,7 +24,7 @@ const clarifaiAPI = config_1.default.get("environment.clarifai");
 const stub = ClarifaiStub.grpc();
 const metadata = new grpc.Metadata();
 metadata.set("authorization", `Key ${clarifaiAPI}`);
-const getCoordinates = (res, image) => __awaiter(void 0, void 0, void 0, function* () {
+const getCoordinates = (res, image, user) => __awaiter(void 0, void 0, void 0, function* () {
     stub.PostModelOutputs({
         model_id: "face-detection",
         user_app_id: {
@@ -37,7 +37,6 @@ const getCoordinates = (res, image) => __awaiter(void 0, void 0, void 0, functio
                 data: {
                     image: {
                         url: image,
-                        // base64: imageBytes,
                         allow_duplicate_url: true,
                     },
                 },
@@ -52,7 +51,7 @@ const getCoordinates = (res, image) => __awaiter(void 0, void 0, void 0, functio
             return res.status(500).json({ error: "unable to get entries" });
         }
         const regions = yield response.outputs[0].data.regions;
-        return res.status(201).json(regions);
+        return res.status(201).json(user ? { user, regions } : regions);
     }));
 });
 router.post("/guest-image", (0, user_validations_1.guestImageValidation)(), user_validations_1.validate, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -83,7 +82,7 @@ router.post("/image", (0, user_validations_1.imageValidation)(), user_validation
             res.status(404).json({ message: "User not found." });
         }
         else {
-            yield getCoordinates(res, image);
+            yield getCoordinates(res, image, user);
         }
     }
     catch (error) {

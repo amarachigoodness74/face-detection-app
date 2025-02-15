@@ -1,6 +1,6 @@
 import { Router, Request, Response, NextFunction } from "express";
 import config from "config";
-import User from "../models/user.model";
+import User, { IUser } from "../models/user.model";
 import {
   guestImageValidation,
   imageValidation,
@@ -18,7 +18,7 @@ const stub = ClarifaiStub.grpc();
 const metadata = new grpc.Metadata();
 metadata.set("authorization", `Key ${clarifaiAPI}`);
 
-const getCoordinates = async (res: Response, image: string) => {
+const getCoordinates = async (res: Response, image: string, user?: IUser) => {
   stub.PostModelOutputs(
     {
       model_id: "face-detection",
@@ -32,7 +32,6 @@ const getCoordinates = async (res: Response, image: string) => {
           data: {
             image: {
               url: image,
-              // base64: imageBytes,
               allow_duplicate_url: true,
             },
           },
@@ -51,7 +50,7 @@ const getCoordinates = async (res: Response, image: string) => {
       }
 
       const regions = await response.outputs[0].data.regions;
-      return res.status(201).json(regions);
+      return res.status(201).json(user ? { user, regions } : regions);
     }
   );
 };
@@ -98,7 +97,7 @@ router.post(
       if (!user) {
         res.status(404).json({ message: "User not found." });
       } else {
-        await getCoordinates(res, image);
+        await getCoordinates(res, image, user);
       }
     } catch (error: any) {
       logger.info(error.message || error);
